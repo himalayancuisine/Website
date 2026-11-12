@@ -1,10 +1,10 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCart } from './CartProvider';
 import { money } from '@/lib/format';
 
 // Simple dishes add straight away. Dishes with spice levels or add-ons open a "customize" dialog first.
-export default function AddToCart({ item }) {
+export default function AddToCart({ item, prefer = null }) {
   const { add, blocked } = useCart();
   const opts = item.options || [], spices = item.spice_levels || [], extras = item.addons || [];
   const custom = spices.length > 0 || extras.length > 0;
@@ -15,6 +15,8 @@ export default function AddToCart({ item }) {
   const [done, setDone] = useState(false);
   const [warn, setWarn] = useState(false);
   const dlg = useRef(null);
+  // When the guest searched for an option by name ("lamb korma"), start on that option.
+  useEffect(() => { const i = (item.options || []).findIndex((o) => o.label === prefer); if (i >= 0) setPick(i); }, [prefer, item.options]);
 
   const chosen = extras.filter((e) => sel.includes(e.label));
   const unit = Number(opts.length ? opts[pick].price : item.price) + chosen.reduce((n, e) => n + Number(e.price), 0);
@@ -55,7 +57,7 @@ export default function AddToCart({ item }) {
 
   return (
     <>
-      <span className="price">{opts.length ? `From ${money(low)}` : money(item.price)}</span>
+      <span className="price">{opts.length ? (prefer && opts[pick]?.label === prefer ? `${prefer} ${money(opts[pick].price)}` : `From ${money(low)}`) : money(item.price)}</span>
       <button type="button" className={`btn sm ${done ? 'gold' : 'rust'}`} onClick={guard(() => dlg.current?.showModal())}>{done ? '\u2713 Added' : 'Add to cart'}</button>
       {warning}
       <dialog ref={dlg} className="mod" onClick={(e) => e.target === dlg.current && dlg.current.close()} aria-label={`Customize ${item.name}`}>

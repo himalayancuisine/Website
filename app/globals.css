@@ -1059,3 +1059,10 @@ fieldset.req > legend::after { content: ' *'; color: #c0392b; font-weight: 700; 
 .fb-q textarea { width: 100%; }
 .fb-send { width: 100%; min-height: 52px; font-size: 1.05rem; }
 @media (max-width: 480px) { .fb-area { flex-direction: column; align-items: flex-start; gap: .1rem; } .bf-stars.sm label { font-size: 2rem; } }
+
+/* ---------- Revision 33: options shown on dish cards, smarter menu search ---------- */
+.dish-opts { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem; padding: 0; margin: .15rem 0 0; }
+.dish-opts li { font-size: .8rem; font-weight: 600; padding: .2rem .6rem; border: 1px solid var(--line); border-radius: 99px; background: var(--soft); white-space: nowrap; }
+.dish-opts li span { font-weight: 500; color: var(--muted); margin-left: .2rem; }
+.dish-opts li.hit { background: var(--gold); border-color: var(--gold); color: var(--espresso); }
+.dish-opts li.hit span { color: var(--espresso); }
