@@ -2,7 +2,7 @@ import Link from 'next/link';
 import HeroVideo from '@/components/HeroVideo';
 import HeroScene from '@/components/HeroScene';
 import { DEFAULT_LAYER } from '@/lib/scene';
-import { siteUrl } from '@/lib/site';
+import { restaurantLd, ldScript } from '@/lib/schema';
 import FogReveal from '@/components/FogReveal';
 import DishCard from '@/components/DishCard';
 import GalleryGrid from '@/components/GalleryGrid';
@@ -19,7 +19,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getSettings } from '@/lib/settings';
 import { telHref, timeSlots, todayISO, addDays, stars } from '@/lib/format';
 
-export const metadata = { alternates: { canonical: '/' } };
+export const metadata = { alternates: { canonical: '/' }, openGraph: { type: 'website', url: '/', siteName: 'Himalayan Nepalese & Indian Cuisine', locale: 'en_US', title: 'Himalayan Nepalese & Indian Cuisine | Restaurant in San Marcos, TX', description: 'Nepali and Indian restaurant at 115 Wonder World Drive, San Marcos, TX. Momos, curries, biryani and fresh tandoor naan. Eat in or order online for pickup.', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Himalayan Nepalese & Indian Cuisine, San Marcos, TX' }] } };
 
 export default async function Home() {
   const sb = await createClient();
@@ -57,19 +57,15 @@ export default async function Home() {
 
   const avg = reviews?.length ? reviews.reduce((n, r) => n + r.rating, 0) / reviews.length : 0;
   const today = todayISO();
-  const site = siteUrl();
-  const ld = {
-    '@context': 'https://schema.org', '@type': 'Restaurant',
-    name: s.business_name, servesCuisine: ['Nepalese', 'Indian'], telephone: s.phone, email: s.email || undefined,
-    address: { '@type': 'PostalAddress', streetAddress: '115 Wonder World Drive', addressLocality: 'San Marcos', addressRegion: 'TX', postalCode: '78666', addressCountry: 'US' },
-    openingHours: 'Mo-Sa 12:00-21:00', url: site, hasMenu: `${site}/menu`, acceptsReservations: !!s.reservations_enabled,
-    sameAs: [s.instagram_url, s.facebook_url].filter(Boolean),
-    ...(reviews?.length ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: avg.toFixed(1), reviewCount: reviews.length } } : {}),
-  };
+  const ld = restaurantLd(s, {
+    ...(reviews?.length ? {
+      aggregateRating: { '@type': 'AggregateRating', ratingValue: avg.toFixed(1), reviewCount: reviews.length, bestRating: 5, worstRating: 1 },
+    } : {}),
+  });
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={ldScript(ld)} />
 
       <HeroScene items={h3.enabled === false ? [] : (h3.items || [])} shape={h3.shape} layer={h3.layer === false ? null : (h3.layer_url || DEFAULT_LAYER)} strip={
         <div className="info-strip">
@@ -89,7 +85,7 @@ export default async function Home() {
             {s.hero_subtitle && <p className="lede">{s.hero_subtitle}</p>}
             <div className="actions">
               <Link href="/menu" className="btn gold">Order Now</Link>
-              {s.reservations_enabled && <Link href="/#reservation" className="btn line">Reserve a table</Link>}
+              {s.reservations_enabled && <Link href="/reservations" className="btn line">Make a Reservation</Link>}
             </div>
           </div>
         </div>
@@ -101,6 +97,7 @@ export default async function Home() {
             <div className="sec-head"><h2>About Us</h2></div>
             <p className="lead">{s.story}</p>
             {s.philosophy && <p>{s.philosophy}</p>}
+            <p><Link href="/about" className="more-link">More about us</Link> &middot; <Link href="/buffet" className="more-link">Our Buffet</Link></p>
           </div>
           <FogReveal src={s.about_image_url || '/about-restaurant.jpg'} alt="Inside Himalayan Nepalese & Indian Cuisine, San Marcos" />
         </div>

@@ -21,10 +21,11 @@ export async function generateMetadata({ params }) {
   const pageTitle = p.seo_title ? { absolute: p.seo_title } : p.title; // a custom search title is used exactly as written
   const desc = description(p);
   const url = `/blog/${slug}`;
-  // The cover photo, or the generated card from opengraph-image.js when the article has no cover. Always an absolute https address.
-  const card = abs(`/blog/${slug}/opengraph-image`);
-  const image = abs(p.cover_url) || card;
-  const shareImg = abs(p.cover_url) ? { url: image, alt: p.cover_alt || p.title } : { url: card, width: 1200, height: 630, alt: p.title };
+  // Always our own 1200 x 630 JPEG (cover.jpg/route.js): the cover photo cropped and lightened, or a drawn card with the title.
+  // Share previews need an absolute https address, a known size and a JPEG/PNG; an uploaded WebP or a huge photo often shows no picture.
+  const v = encodeURIComponent(String(p.updated_at || p.published_at || '').slice(0, 19)); // new address when the article changes, so previews refresh
+  const image = abs(`/blog/${slug}/cover.jpg${v ? `?v=${v}` : ''}`);
+  const shareImg = { url: image, secureUrl: image, type: 'image/jpeg', width: 1200, height: 630, alt: p.cover_alt || p.title };
   return {
     title: pageTitle, description: desc,
     alternates: { canonical: url },
@@ -32,10 +33,10 @@ export async function generateMetadata({ params }) {
     robots: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 },
     openGraph: {
       type: 'article', url, title, description: desc, siteName: SITE_NAME, locale: 'en_US',
-      publishedTime: p.published_at || undefined, modifiedTime: p.updated_at || p.published_at || undefined, authors: [SITE_NAME],
+      publishedTime: p.published_at || undefined, modifiedTime: p.updated_at || p.published_at || undefined, authors: [SITE_NAME], section: 'Food',
       images: [shareImg],
     },
-    twitter: { card: 'summary_large_image', title, description: desc, images: [image] },
+    twitter: { card: 'summary_large_image', title, description: desc, images: [{ url: image, alt: p.cover_alt || p.title }] },
   };
 }
 
@@ -55,7 +56,7 @@ export default async function Post({ params }) {
     {
       '@context': 'https://schema.org', '@type': 'BlogPosting',
       mainEntityOfPage: { '@type': 'WebPage', '@id': url }, headline: (p.seo_title || p.title).slice(0, 110), description: description(p),
-      image: image ? [image] : [`${url}/opengraph-image`], datePublished: p.published_at, dateModified: p.updated_at || p.published_at,
+      image: [`${url}/cover.jpg`, ...(image ? [image] : [])], datePublished: p.published_at, dateModified: p.updated_at || p.published_at,
       author: { '@type': 'Organization', name: SITE_NAME, url: site() },
       publisher: { '@type': 'Organization', name: SITE_NAME, url: site(), logo: { '@type': 'ImageObject', url: `${site()}/logo` } },
       wordCount: wordCount(p.body), inLanguage: 'en-US', isPartOf: { '@type': 'Blog', name: `${SITE_NAME} Blog`, url: `${site()}/blog` },
@@ -69,14 +70,14 @@ export default async function Post({ params }) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }} />
       <article className="art">
         <header className="art-head wrap">
           <nav className="crumbs dark" aria-label="Breadcrumb"><Link href="/">Home</Link> / <Link href="/blog">Blog</Link> / <span aria-current="page">{p.title}</span></nav>
           <h1>{p.title}</h1>
           {p.excerpt && <p className="art-lede">{p.excerpt}</p>}
           <p className="art-meta">By {SITE_NAME}{p.published_at && <> &middot; <time dateTime={p.published_at}>{dateLong(p.published_at)}</time></>} &middot; {mins} min read</p>
-          <ShareLinks url={url} title={p.title} />
+          <ShareLinks url={url} title={p.title} text={description(p)} />
         </header>
         {p.cover_url && <figure className="art-cover wrap"><img src={p.cover_url} alt={p.cover_alt || p.title} fetchPriority="high" /></figure>}
         <div className="wrap art-layout">
@@ -90,7 +91,7 @@ export default async function Post({ params }) {
           )}
           <div className="prose art-body"><Prose body={p.body} /></div>
         </div>
-        <div className="wrap art-foot"><ShareLinks url={url} title={p.title} /></div>
+        <div className="wrap art-foot"><ShareLinks url={url} title={p.title} text={description(p)} /></div>
       </article>
       {more?.length > 0 && (
         <section className="section soft">

@@ -20,7 +20,7 @@ export default async function Blog() {
   const ld = {
     '@context': 'https://schema.org', '@type': 'Blog', name: `${SITE_NAME} Blog`, description: DESC, url: `${site()}/blog`, inLanguage: 'en-US',
     publisher: { '@type': 'Restaurant', name: SITE_NAME, url: site() },
-    blogPost: posts.slice(0, 20).map((p) => ({ '@type': 'BlogPosting', headline: p.title, url: `${site()}/blog/${p.slug}`, datePublished: p.published_at, image: abs(p.cover_url) || undefined })),
+    blogPost: posts.slice(0, 20).map((p) => ({ '@type': 'BlogPosting', headline: p.title, url: `${site()}/blog/${p.slug}`, datePublished: p.published_at, image: `${site()}/blog/${p.slug}/cover.jpg` })),
   };
   return (
     <>

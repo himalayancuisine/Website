@@ -51,13 +51,19 @@ export async function submitFeedback(a, b) {
     if (isBot(fd)) return { ok: true, message: 'Thank you.' };
     const message = clean(fd.get('message'), 1500), name = clean(fd.get('name'), 80), email = clean(fd.get('email'), 120);
     const rating = parseInt(fd.get('rating'), 10);
-    if (message.length < 3) throw new Error('Please tell us a little more.');
+    if (!(rating >= 1 && rating <= 5)) throw new Error('Please choose a star rating for your visit.');
     if (email && !okEmail(email)) throw new Error('That email address does not look right.');
-    const { error } = await createAdminClient().from('feedback').insert({ rating: rating >= 1 && rating <= 5 ? rating : null, name: name || null, email: email || null, message });
+    const pick = (k, list) => { const v = clean(fd.get(k), 40); return list.includes(v) ? v : ''; };
+    const visit = pick('visit', ['Dine-in', 'Pickup order', 'Buffet', 'Catering']), again = pick('again', ['Yes', 'Maybe', 'No']);
+    const areas = [['food', 'Food'], ['service', 'Service'], ['clean', 'Cleanliness'], ['value', 'Value']]
+      .map(([k, l]) => { const n = parseInt(fd.get(k), 10); return n >= 1 && n <= 5 ? `${l} ${n}/5` : ''; }).filter(Boolean).join(', ');
+    // The answers are kept as lines at the top of the note, so the dashboard shows them without a database change.
+    const full = [`Overall: ${rating}/5`, visit && `Visit: ${visit}`, areas && `Ratings: ${areas}`, again && `Would come back: ${again}`].filter(Boolean).join('\n') + (message ? `\n\n${message}` : '');
+    const { error } = await createAdminClient().from('feedback').insert({ rating, name: name || null, email: email || null, message: full });
     if (error) throw new Error('We could not save your feedback. Please call us.');
     const s = await getSettings();
-    await sendEmail({ to: s.email, subject: 'New private feedback', html: row('From', name || 'Anonymous') + row('Email', email) + row('Message', message) });
-    return { ok: true, message: 'Thank you for telling us. We take this seriously and will work on it.' };
+    await sendEmail({ to: s.email, subject: `New feedback: ${rating}/5`, html: row('Overall', `${rating} of 5`) + row('Visit', visit) + row('Ratings', areas) + row('Would come back', again) + row('From', name || 'Anonymous') + row('Email', email) + row('Message', message) });
+    return { ok: true, message: 'Thank you for your feedback.' };
   });
 }
 

@@ -3,7 +3,8 @@ import Icon from './Icon';
 import { getSettings } from '@/lib/settings';
 import { telHref } from '@/lib/format';
 
-const QUICK = [['home', 'Home'], ['about', 'About Us'], ['menu', 'Menu'], ['gallery', 'Gallery'], ['reservation', 'Reservation'], ['testimonials', 'Testimonial'], ['blog', 'Blog'], ['contact', 'Contact Us']];
+// Real page addresses with clear names, so search engines can list them under the site (sitelinks).
+const QUICK = [['/', 'Home'], ['/about', 'About Us'], ['/menu', 'Order Now'], ['/buffet', 'Our Buffet'], ['/reservations', 'Make a Reservation'], ['/gallery', 'Gallery'], ['/#testimonials', 'Testimonials'], ['/blog', 'Blog'], ['/#contact', 'Contact Us']];
 
 export default async function Footer() {
   const s = await getSettings();
@@ -20,7 +21,7 @@ export default async function Footer() {
         </div>
         <div>
           <h3>Quick links</h3>
-          <ul>{QUICK.map(([id, l]) => <li key={id}><Link href={`/#${id}`}>{l}</Link></li>)}<li><Link href="/buffet">Buffet</Link></li></ul>
+          <ul>{QUICK.map(([href, l]) => <li key={href}><Link href={href}>{l}</Link></li>)}</ul>
         </div>
         <div>
           <h3>Opening hours</h3>

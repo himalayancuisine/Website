@@ -2,13 +2,10 @@ import PageHero from '@/components/PageHero';
 import BuffetFeedback from '@/components/BuffetFeedback';
 import { createClient } from '@/lib/supabase/server';
 import { getSettings } from '@/lib/settings';
+import { pageMeta } from '@/lib/site';
 import { BUFFET_GROUPS } from '@/lib/format';
 
-export const metadata = {
-  title: 'Buffet',
-  description: "See what is on the buffet today at Himalayan Nepalese & Indian Cuisine in San Marcos, TX, and tell us how it was.",
-  alternates: { canonical: '/buffet' },
-};
+export const metadata = pageMeta({ title: 'Our Buffet', description: 'Our Buffet at Himalayan Nepalese & Indian Cuisine in San Marcos, TX. See the Nepali and Indian dishes being served today, the price and the hours.', path: '/buffet' });
 export const dynamic = 'force-dynamic';
 
 // Point a table QR code or NFC tag at /buffet. The "today" list and its visibility are controlled in Dashboard > Buffet.
@@ -29,7 +26,7 @@ export default async function BuffetPage() {
 
   return (
     <>
-      <PageHero title="Buffet" sub={b.show_today ? "See what is being served, then tell us how it was." : 'Tell us how your buffet visit was.'} />
+      <PageHero title="Our Buffet" sub={b.show_today ? "See what is being served, then tell us how it was." : 'Tell us how your buffet visit was.'} />
       {b.show_today && (
         <section className="section" aria-labelledby="today-h">
           <div className="wrap" style={{ maxWidth: 900 }}>

@@ -996,3 +996,66 @@ fieldset.req > legend::after { content: ' *'; color: #c0392b; font-weight: 700; 
 @media (max-width: 860px) { .addons-layout { grid-template-columns: minmax(0, 1fr); } .addons-sum { position: static; } }
 
 .cc-tip { grid-column: 1 / -1; order: 9; margin: .25rem 0 0; font-size: .9rem; line-height: 1.4; color: var(--fg); background: #fff7e0; border: 1px solid var(--gold); border-radius: 10px; padding: .6rem .8rem; }
+
+/* ---------- Revision 31: feedback page, menu search, about page ---------- */
+.fb-card { text-align: left; }
+.fb-steps { list-style: none; display: flex; gap: .5rem; padding: 0; margin: 0 0 1.25rem; font-size: .85rem; font-weight: 700; }
+.fb-steps li { padding: .3rem .8rem; border-radius: 99px; background: var(--soft); color: var(--muted); }
+.fb-steps li.on { background: var(--espresso); color: #fff; }
+.fb-rate { text-align: center; margin: 0; }
+.fb-rate legend { font-family: var(--font-display), serif; font-size: clamp(1.6rem, 4vw, 2.1rem); font-weight: 700; margin: 0 auto .15rem; }
+.fb-rate > p { margin: 0 0 .75rem; }
+.fb-rate .bf-stars { justify-content: center; gap: .35rem; }
+.fb-rate .bf-stars label { font-size: clamp(2.6rem, 11vw, 3.4rem); padding: .1rem .15rem; transition: transform .12s ease; }
+.fb-rate .bf-stars label:hover, .fb-rate .bf-stars label:focus-within { transform: scale(1.12); }
+.fb-word { display: block; min-height: 1.6em; margin-top: .5rem; color: var(--rust); font-size: 1.05rem; }
+.fb-panel { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.fb-panel h2 { margin: 0 0 .35rem; font-size: clamp(1.35rem, 3.5vw, 1.7rem); }
+.fb-panel > p { margin-top: 0; }
+.fb-happy { text-align: center; }
+.fb-happy p { margin-inline: auto; max-width: 46ch; }
+.fb-happy .btn-row, .fb-done .btn-row { justify-content: center; }
+.fb-set { border: 0; padding: 0; margin: 0 0 1.1rem; min-width: 0; }
+.fb-set legend { font-weight: 700; padding: 0; margin-bottom: .5rem; }
+.fb-set legend small { font-weight: 500; color: var(--muted); margin-left: .35rem; }
+.fb-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+.fb-chips .chip-radio { position: relative; }
+.fb-count { text-align: right; margin: .25rem 0 0; }
+.fb-done { text-align: center; }
+.fb-done p { margin-inline: auto; max-width: 46ch; }
+.fb-badge { width: 64px; height: 64px; margin: 0 auto 1rem; border-radius: 50%; background: var(--gold); color: var(--espresso); display: grid; place-items: center; font-size: 2rem; font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .fb-rate .bf-stars label { transition: none; } .fb-rate .bf-stars label:hover { transform: none; } }
+
+.menu-search { display: flex; align-items: center; gap: .6rem; padding: 0 1rem; margin-bottom: .9rem; min-height: 52px; background: #fff; border: 2px solid var(--line); border-radius: 14px; color: var(--muted); }
+.menu-search:focus-within { border-color: var(--rust); color: var(--rust); }
+.menu-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 1rem; color: var(--fg); padding: .6rem 0; min-height: 0; box-shadow: none; }
+.menu-search input::-webkit-search-cancel-button { display: none; }
+.menu-search button { border: 0; background: var(--soft); color: var(--fg); width: 32px; height: 32px; border-radius: 50%; font-size: 1.3rem; line-height: 1; cursor: pointer; flex: none; }
+.menu-count { font-weight: 700; margin: 0 0 .5rem; }
+.linkish { border: 0; background: none; padding: 0; font: inherit; color: var(--rust); text-decoration: underline; cursor: pointer; }
+.more-link { font-weight: 700; color: var(--rust); }
+
+.about-photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 18px; box-shadow: var(--shadow); }
+.about-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+.about-card { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 1.5rem; text-decoration: none; color: var(--fg); box-shadow: var(--shadow); }
+.about-card:hover { border-color: var(--rust); }
+.about-card h3 { margin: .9rem 0 .35rem; font-family: var(--font-display), serif; font-size: 1.5rem; }
+.about-card p { margin: 0; color: var(--muted); }
+@media (max-width: 800px) { .about-cards { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Revision 32: feedback as one proper form ---------- */
+.fb-q { border: 0; padding: 0; margin: 0 0 1.6rem; min-width: 0; }
+.fb-q legend, .fb-label { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; padding: 0; margin: 0 0 .7rem; font-weight: 700; font-size: 1.08rem; }
+.fb-q.req legend::after { content: "*"; color: var(--red); margin-left: -.3rem; }
+.fb-label small { font-weight: 500; font-size: .88rem; color: var(--muted); }
+.fb-n { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--espresso); color: #fff; display: inline-grid; place-items: center; font-size: .85rem; font-weight: 700; }
+.fb-q > .bf-stars label { font-size: clamp(2.5rem, 11vw, 3.1rem); }
+.bf-stars.sm label { font-size: 1.75rem; padding: .05rem .12rem; }
+.bf-stars.sm .bf-word { font-size: .88rem; margin-left: .5rem; min-width: 5.5ch; }
+.fb-areas { display: grid; gap: .15rem; }
+.fb-area { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .45rem 0; border-bottom: 1px solid var(--line); }
+.fb-area:last-child { border-bottom: 0; }
+.fb-area > span { font-weight: 600; }
+.fb-q textarea { width: 100%; }
+.fb-send { width: 100%; min-height: 52px; font-size: 1.05rem; }
+@media (max-width: 480px) { .fb-area { flex-direction: column; align-items: flex-start; gap: .1rem; } .bf-stars.sm label { font-size: 2rem; } }
